@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flowtype First Steps</title>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="./img/favicon.ico"/>
+    <link href="./css/index.css" rel="stylesheet" type="text/css">
+    <link href="./css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <textarea id="source">
+
+name: rkaneko-theme
+layout: true
+class: rkaneko-theme
+---
+class: title-page
+
+# Flowtype First Steps
+## 
+#### March 28th, 2017
+
+<span class="head-my-name">
+  <span class="head-my-name__icon">
+    <img src="./img/myicon_round.png" alt="rkaneko"/>
+  </span>
+  <span class="head-my-name__text">
+    Ryota Kaneko
+  </span>
+</span>
+  
+<span class="head-github-name">
+  <span class="head-github-name__icon">
+    <i class="fa fa-github fa-2x"></i>
+  </span>
+  <span class="head-github-name__text">
+    rkaneko
+  </span>
+</span>
+---
+
+# Agenda
+
+0. What's Flowtype?
+
+0. Getting started Flowtype
+
+0. Basics
+
+0. In practice
+
+0. Conclusion
+---
+class: paragraph-page
+
+# What's Flowtype?
+---
+# What's Flowtype?
+
+#### https://github.com/facebook/flow
+
+#### Opt-in static type checker for JavaScript
+
+- 既存コードに漸近的にflowのsyntaxを追加していける
+- OCaml実装
+
+#### Type inference
+
+- 暗黙的な型変換によるバグチェック
+- null, undefinedな可能性のある値のチェック
+
+#### Idiomatic JS
+
+- 型定義を書かないJSのコードスタイルの意味を出来る限り理解するようにデザインされている
+  - any typeを利用して型チェックをオプトアウトさせるという選択もある
+- Facebook製ということもあり、React.jsとの親和性も考慮されている模様
+---
+# Ecosystems
+
+#### flow-bin
+
+- https://github.com/flowtype/flow-bin
+- Binary wrapper for Flow
+- npm ecosystemではこのCLIを利用して型チェックを実行する
+
+#### flow-typed
+
+- https://github.com/flowtype/flow-typed
+- 3rd party libsの型定義ファイルのレポジトリ
+- flow-type CLIではpackage.jsonを見てプロジェクトに必要な型定義ファイルを管理する
+
+---
+# Ecosystems
+
+#### flow-remove-types
+
+- https://github.com/flowtype/flow-remove-types
+- Flowのtype annotationsをJSファイルから削除する
+- babel-plugin-transform-flow-strip-typesのようにbabelのbuild pipelineの中でtype annotationsを削除するものもある
+  - https://github.com/babel/babel/tree/master/packages/babel-plugin-transform-flow-strip-types 
+
+#### Editors support
+
+- VS code, Vim, Emacs
+
+.center[.reference[Reference: [github.com/flowtype](https://github.com/flowtype)]]
+
+---
+# Ecosystems
+
+#### Try Flow
+
+- https://flowtype.org/try/
+
+.center[<img src="./img/try-flow-src.png" alt="rkaneko" width="280px"/>]
+.center[<img src="./img/try-flow-result.png" alt="rkaneko" width="540px"/>]
+---
+class: paragraph-page
+
+# Getting started Flowtype
+---
+### Getting started
+
+#### Prerequisites
+
+- node v6
+- npm v4
+
+#### packages
+
+- flow-bin v0.42.0
+
+```bash
+# In some project directory
+$ npm init -f
+```
+
+---
+# Table
+
+|left|center|right|
+|:---|:---:|---:|
+|blahblahblahblah blahblahblahblahblahblah|blahblahblah blahblahblahblahblah blahblah|blahblahblahblahblah blahblahblahblahblahblah|
+|blahblahblahblah blahblahblahblahblahblah|blahblahblah blahblahblahblahblah blahblah|blahblahblahblahblah blahblahblahblahblahblah|
+|blahblahblahblah blahblahblahblahblahblah|blahblahblah blahblahblahblahblah blahblah|blahblahblahblahblah blahblahblahblahblahblah|
+|blahblahblahblah blahblahblahblahblahblah|blahblahblah blahblahblahblahblah blahblah|blahblahblahblahblah blahblahblahblahblahblah|
+|blahblahblahblah blahblahblahblahblahblah|blahblahblah blahblahblahblahblah blahblah|blahblahblahblahblah blahblahblahblahblahblah|
+|blah|blah|blah|
+
+---
+
+class: center
+
+#### centering slide
+
+<img src="./img/myicon_round.png" alt="rkaneko" width="540px"/>
+
+---
+class: center, middle
+
+# center &amp; middle
+
+---
+class: paragraph-page
+
+## the paragraph page
+### .color-yellow[yellow]
+### .color-red[red]
+### .color-green[green]
+
+### [Font Awesome](https://fortawesome.github.io/Font-Awesome/)
+---
+
+### Tips
+
++ colors
+
+  - .color-yellow[yellow]
+  - .color-red[red]
+  - .color-blue[blue]
+  - .color-green[green]
+  - .color-grey[grey]
+  - .color-light-grey[light grey]
+  - .color-orange[orange]
+  - .color-pink[pink]
+  - .color-purple[purple]
+  - .color-black[black]
+  - .color-white[white]
+
+.center[.reference[Reference: [materialize color](http://materializecss.com/color.html)]]
+---
+# blockquote
+
+.center[
+.blockquote[
+リスクとは、
+
+自分が何をやっているか
+
+よくわからないときに
+
+起こるものです。
+
+.blockquote-origin[Warren Edward Buffett]
+]
+]
+
+---
+### Tips
+
++ code
+
+```js
+(() => {
+  console.log('Hello my slide!');
+})();
+```
+
++ link
+
+  - [rkaneko @ GitHub](https://github.com/rkaneko)
+
+---
+class: paragraph-picture-page
+
+<figure>
+<img src="./img/spit-on.gif" alt="spit-on"/>
+<div class="paragraph-picture-page__block"></div>
+<figcaption><p class="paragraph-picture-page__caption">awesome!</p></figcaption>
+</figure>
+---
+class: paragraph-page
+
+### Thanks!
+
+    </textarea>
+    <script src="./javascript/remark-0.14.0.js"></script>
+    <script>
+      var slideshow = remark.create({
+        ratio: '4:3',
+        highlightStyle: 'androidstudio',
+      });
+    </script>
+  </body>
+</html>
