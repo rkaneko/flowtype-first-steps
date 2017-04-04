@@ -136,6 +136,183 @@ $ npm init -f
 ```
 
 ---
+class: paragraph-page
+
+# Basics
+
+---
+# Primitive Types
+
+#### Booleans
+
+```js
+(true: boolean);
+(false: boolean);
+("blahblah": boolean);  // Error
+(undefined: boolean);  // Error
+(null: boolean);  // Error
+(0: boolean);  // Error
+```
+---
+# Primitive Types
+
+#### Booleans
+
+```js
+function reverse(flag: boolean): boolean {
+  return !flag;
+}
+
+reverse(true);
+reverse(false);
+reverse('text');  // Error
+reverse(0);  // Error
+reverse(Boolean(0));
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVAKALgJwK4CmAXGAEZxwwECGAdgJQDcmU1MAzsWRVXU5gCJSMagAthYgSXKUaDRmDDBgYAKI4ccHJjy0AJgSgBLWgT3SecpouVqNWzLTwwYF2XwVKV6zdowAGN155G297bVQoXQBjLCM4WjAcAgA3AhxODFhqAHMgq3y6MABvVEVkrDwcRIBCbJzmAF90ZLSMgmx8An5W9MzWDm7mXvaMASwCAA8sAWsvO19UEcz-OdsfB2WOgCFLOgD6JiA
+---
+# Primitive Types
+
+#### Numbers
+
+```js
+(256: number);
+(3.14: number);
+(NaN: number);
+(Infinity: number);
+("3.14": number);  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVAKATAVgGwBcYAdgK4C2ARgKYBOAlANyYDMAdAIwAsRZVdTTADkAhkN4UaDZhgCSxKAEtiigC4BPCf2mYARO266tUpmDDBgYAKK1acWkA
+---
+# Primitive Types
+
+#### Strings
+
+```js
+('blahblah': string);
+('true': string);
+('': string);
+const text1: string = undefined;  // Error
+const text2: string = 1;  // Error
+const text3: string = true;  // Error
+const text4: string = {};  // Error
+'' + String(false);
+'' + JSON.stringify({});
+```
+
+- https://flow.org/try/#0BQcgRgNghgFpsgFwAIDOAXATgSwHYHMBKAbgChQsBXAUyTSzyLNDoxwJNIGMB7XDZOmoAPdAEYUbRsgC8ySrgAm1AGZ5qi4smQB6HcgCimTD0zc+AoaIBMkhgVnIxW3fqMmzvfukEj0AZjt2fEcqahc9Q2NTc29fUQAWIOk5AG8AXwi3aLMQEGQAamQAZXt8YBUoCFRqTjzC5AApYoB5ADkAOikCbBUAT2AMkiA
+
+---
+# Primitive Types
+
+- `null`と`undefined`は区別される
+
+#### null
+
+```js
+function acceptsNull(v: null) {
+  console.log(v);
+}
+
+acceptsNull(null);
+acceptsNull(undefined);  // Error
+```
+
+#### void
+
+```js
+function acceptsUndefined(v: void) {
+  console.log(v);
+}
+
+acceptsUndefined(undefined);
+acceptsUndefined(null);  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBDXXAUwAd8BnAOUxhgAoA3ALjGxZgCUYAN6owYXCXpwYVAHTwA5pwEBuVAF90FanSb82fVmtQ7aDZqzY4AJlSiFsVG2vHBgYAKIAnb3G-oWHhEJOSU5vQAqth2Dk42nDwccIQuIuIZmVnZObl5+QWFRcX5YhJSMvJKKupapuF60bGOztYx9i0u6maN7XGtRoKqbh4+fgFAA
+
+---
+# Primitive Types
+
+#### Maybe types
+
+- Maybe typesは`null`と`undefined`どちらも受け入れる
+
+```js
+function acceptsMaybe(v: ?string) {
+  console.log(v);
+}
+
+acceptsMaybe('text');
+acceptsMaybe(null);
+acceptsMaybe(undefined);
+acceptsMaybe();
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBDXXAUwAd8BnAWTIE8AjKgCgDcAuMAPz18AJ0LYA5gEowAb1RgwuEvTgwqAOngSeUgNyoAvugrU6TVh04ByfFQAe+a-sWu37j56-efvv-4DAn1RTWgZmdi5sTBgYfRDKMItIzhwAEyoocSo0+NDzCKt9IA
+
+---
+# Primitive Types
+
+#### Optional
+
+- `void`と「省略」は受け入れる
+- `null`は受け入れない
+
+```js
+// Optional object properties
+({foo: 'bar'}: {foo?: string});
+({foo: undefined}: {foo?: string});
+({}: {foo?: string});
+({foo: null}: {foo?: string});  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVxhgPIAcAuAlnAHYCGMYcARgFYCmAxvmLgE5y71tH0DOqABQBvKHDgAuMAHJqZNtIC+U0eID8UvvjaESAc0UBKANxDVksAFcSAE3pRd9G8rDmNYLTv1HTIl281tXQMTMzELEksYGH9w909gnzAwTDAAUTYONiA
+
+```js
+// Optional function parameters
+function acceptsOptionalString(v?: string) {
+  console.log(v;
+}
+
+acceptsOptionalString('text');
+acceptsOptionalString(undefined);
+acceptsOptionalString();
+acceptsOptionalString(null);  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVxhgPIAcAuAlnAHYCGMYUAriQMZGli5kBOZAtgKb5esDOqGvUYkwZOnS4F+eURQDK+VoRIBzABQA3APwAuMP2Wq1ASjABvVGDB1S-ODC4A6eJq2mA3KgC+6CVIycsTkMEoq6hoA5LwAHvhRXqgB0viyBCGKxpG0ACZcUKpcuUkpQRmkWRGapZKp6fJh2Zok1DAwXjaYYACirKxwrGBAA
+---
+# Primitive Types
+
+#### Default parameters
+
+[ES2015 default function parameters](http://www.ecma-international.org/ecma-262/6.0/#sec-functiondeclarationinstantiation)に型定義をつけると
+
+- `void`と「省略」は受け入れる
+- `null`は受け入れない
+
+```js
+function acceptsOptString(v: string = 'bar') {
+  console.log(v);
+}
+
+acceptsOptString('foo');
+acceptsOptString(undefined);
+acceptsOptString();
+acceptsOptString(null);  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBDXXAUwAd8BnAeToGV8AnQ7AcwAoA3AFxh6HLtzABeMAHIARmXYyAlGADeqMGFwl6cGFQB08Pv2UBuVAF90FanSasxPXjKhw4Ky3doNm+Nk4XHAATKiguKhCLVB8Hf0DxXhi4vycgvmxMGBgLLWBgMABRdnY4djAgA
+
+---
+
+# Unsupported
+
+- [Symbols](https://flow.org/en/docs/types/primitives/#toc-symbols)
+---
 # Table
 
 |left|center|right|
