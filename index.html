@@ -148,7 +148,7 @@ class: paragraph-page
 ```js
 (true: boolean);
 (false: boolean);
-("blahblah": boolean);  // Error
+('blahblah': boolean);  // Error
 (undefined: boolean);  // Error
 (null: boolean);  // Error
 (0: boolean);  // Error
@@ -308,7 +308,499 @@ acceptsOptString(null);  // Error
 - https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBDXXAUwAd8BnAeToGV8AnQ7AcwAoA3AFxh6HLtzABeMAHIARmXYyAlGADeqMGFwl6cGFQB08Pv2UBuVAF90FanSasxPXjKhw4Ky3doNm+Nk4XHAATKiguKhCLVB8Hf0DxXhi4vycgvmxMGBgLLWBgMABRdnY4djAgA
 
 ---
+# Literal Types
 
+- literal valueを型として使用できる
+
+```js
+function acceptsTwo(v: 2) {
+  console.log(v);
+}
+
+acceptsTwo(2);
+acceptsTwo(3);  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBDXXAUwAd8BnAFQTgAoA3ALjACYBKMAG9UYMLhL04MKgDp4Acw58A3KgC+6CtTpMWrfqq20GzNgGYVo4MDABRAE7249oA
+
+---
+# Literal Types
+
+- enumのようにも使える
+
+```js
+function wizard(color: 'RED' | 'BLUE' | 'GREEN' | 'YELLOW'): string {
+  if (color === 'RED') {
+    return 'fire';
+  } else if (color === 'BLUE') {
+    return 'water';
+  } else if (color === 'GREEN') {
+    return 'hurricane';
+  } else if (color === 'YELLOW') {
+    return 'land';
+  }
+  throw new Error();
+}
+
+wizard('RED');
+wizard('BLUE');
+wizard('GREEN');
+wizard('YELLOW');
+wizard('INFINITY');  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swFCAvAQwCcATAClznhoC4wByAJQFEARTmAA+XAEIAZAKq8hozgHE+vAHJyuATV4SJAeQDqnAJQcAzvhqFsAczABvVGDCEoYJizg0wAXl9c+gkb2jk5gNACm+Jg0pJxQhBGcANwhAL5g4TCm4c6u7qw+fpySMsbBoWGR0bEIVPjhNMlpGVk5Lm7MBb7eXEq8qmUOFRFRMVwAFtGWuFTY4U1O6ZnZuR0eXt2a2nqGQUOhI9VcMLN0C2CpIf
+
+---
+# Mixed Types
+
+#### A group of different possible types
+
+```js
+function stringify(v: string | number | boolean) {
+  return '' + String(v);
+}
+
+stringify('blah');
+stringify(2);
+stringify(true);
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBnfAJ0OwHNCoBPACgDcAucqm2sAHzDZMAWwBGAU0r8wouHBjiAhtgCUYAN6owYSuPyZKpAORGwAajABlbnTYqA3KgC+6CtToMWR0TEUALIwdUNx5PZgAmIJCPJmYqTHEHIA
+
+---
+# Mixed Types
+
+- 未定義の型を指定すると,any typeとして動作する
+- `mixed`以外も使えるがこの用途では`mixed`を使うべき(should)
+
+```js
+function getTypeOf(v: mixed): string {
+  return typeof v;
+}
+
+getTypeOf('blah');
+getTypeOf(1);
+getTypeOf({}); 
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBzAU3wBUBPABwoHkoAKANwC4wBbQgDwoATAJTcAzvgBOhbGTABvVGDBSqmKaXwMKcKGHYBuVAF90lGjpasA5ACMYAQwAWNkcYt1G1gIzvUnlZsCibuYEA
+
+---
+# Mixed Types
+
+- 次はError
+
+```js
+function stringify1(v: mixed): string {
+  return '' + v;  // Error
+}
+```
+
+- [Type refinements](https://flow.org/en/docs/lang/refinements/)を行って、stringの`+` operatorのoperand2として取れる型を確定させる
+
+```js
+function stringify2(v: mixed): string {
+  if (typeof v === 'string') {
+    return '' + v;
+  }
+  return '';
+}
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBnfAJ0OwHNCoBPARgAoA3ALjAFtCAPAKYATAJTcK1OmADeqMGEqD8mSqQDk6sAGow7ANwLgwMAFFKlOJVQBfeQoeOnzl67fuPnr95+-vGHAJiUkkaeiYAJg5uPiExCSow2XsGMFZ8RgAHQTgoPTAAXiKwdVC6dVFkxyUVNRKtXQN7OwUa1Q11fVsgA
+
+---
+# Any Types
+
+- type checkerの使用をopt-outさせたい場合に使う
+- .color-red[**出来る限り使うのは避けるべき**]
+- mixed typesとして使わないように注意
+- 使う場合にも関数の戻り値などにanyを使用してanyがleakすることがないようにする
+
+```js
+function add(one: any, two: any): number {
+  return one + two;
+}
+
+add(1, 2); 
+add('1', '2');
+add({}, []);
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBDAEwoAoSBTALnOwE8AaMfBOJs1gSibZMAWwBGdAE5gA3qjBhJdfJkml6YANSduAblQBfdJRoBGDgCZ+usKhPUA5KYccHFh9btVqMgxwDaALrWYEA
+
+#### Use cases
+
+- 既存コードにflowを導入しているときに優先度が低い型
+- flowが正しくチェックできないコードに対して
+
+---
+# Type refinements
+
+#### Maybe types
+
+```js
+function add(one: any, two: any): number {
+  return one + two;
+}
+
+add(1, 2); 
+add('1', '2');
+add({}, []);
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swwBDbAT3wAtDsBzAURgGcBTAOUwFsAVWgCdEACgBuALjAB+bHwBGHIQEpp83kqFgA3qjKEoYCWAC85sPJgwwAH1th8VAA4c4R8WYsByHABMOKAYOP28VXTJIqOiY2Lj4hMSk5OT9SLoRJGwOJGYhESFRFQBuNIBfNKEOfEwhUnFSsqA
+
+---
+# Variable Types
+
+- `var`, `let`: 再代入可
+- `const`: 再代入不可
+
+```js
+var num = 1;
+num = 2;
+num = 'text';
+
+let bool = true;
+bool = false;
+bool = 'text';
+
+const str = 'text';
+str = 'hoge';  // Error
+str = true;  // Error
+    
+let v1: number = 1;
+v1 = true;  // Error
+    
+let v2: number | boolean = 1;
+v2 = true;
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVA3AhgJzAOwFcBbMAXjAEYBuVI0igJlvvLAHIAXAUwA9P2tVDG6cwAIzhwYbTjkLdak6WyhYYAZ0WplMilz4ChAYzj4NYi3n09+g1FbbsAFnADm3QWDDBgYAKI4OHA4DnKy8orevgFBIaje3sKiYBiUAFwEJOLc1lS0aREK1NF+gcGhiWDJYhiMmfQ5eAA+ElIiWPhsNJiMRYpAA
+
+---
+# Function Types
+
+```js
+function blah(str: string, ...rest: Array<number>): string {
+  return str + rest.join('');
+}
+
+const arrowFunc = (text: string, flag: boolean): void => {
+  console.log(text + String(flag));
+}
+
+function acceptsArbitaryFunc(func: () => mixed): void {
+  func();
+}
+
+let someHandler: Event => void;
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swAjGAQwAsAKAZ3wCcAuMRpw7AcwBowAdEKYBTRmwCCTJpQCeAHmyYAtmRFMAfAEo2HLtzABvMCdNnzFy1es3bdu6hOj8mJqQ5gA1GFGMBAKzguWgByEK0AblQAX3RcEkYwSmlEADEcXDAAXjBafBEAD3xdZn1+WEpuNjI4OBgRSmwdMAA3IIATbI0jRzB47Ho6kQF4bjzC-C8wAGVSnloK7i1ImPQsPCISJNxcEQAHfHopMkJ8ZNl0vAWMtlotLrBlQgKRdua2wk7DXvXcO6jYqh6pNBsoRAAJRrteqsMAAURaImwkyy3Q+7QiQA
+
+---
+# Object Types
+
+```js
+const obj1: {foo: boolean, bar: number} = {foo: true, bar: 256};
+const obj2: {foo: boolean, bar: number} = {foo: false};  // Error
+
+let obj3: {foo: boolean, bar: number} = {foo: true};  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzDgCMArARgC4wBvKOOa4hmAUwENsAaMY9gJ2rYArgFtirfgF8wAXlr1GYfP2GsefQWABMAVgBsUgNyYcBImW3U6DJiw7deAoWInS5C22CjsYuVsZgYMDAYACi-Pxw-OhshCSkAMzWinZwbJwazmAi4pIy8jZKKmqBwaERUfxAA
+
+---
+# Object Types
+
+#### Optional object type properties
+
+- 存在しないプロパティは`undefined`
+- flowではオブジェクトの存在しないプロパティへのアクセスはエラーとなる
+
+```js
+const obj1 = {foo: 'text'};
+obj1.bar;  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzDgCMArARjAF4wBvKOOALjAHJ8BTAD31YF8A3KhIUAdMQCGAJwFgwwYGACiUqXClA
+
+```js
+const obj1: {foo?: string} = {foo: 'text'};
+const obj2: {foo?: string} = {foo: undefined};
+const obj3: {foo?: string} = {};
+const obj4: {foo?: string} = {foo: null};  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzDgCMArARgC4wBvKOOAfmoICcBLbAcwF8wBeWvTjUA5PgCmAD3yieAbkw4CRMgCZqdBszBtOvAUIbUArtgAmEqJwnmFSvIRKkAzJuE693PoJr2sjqqkACzu2iz4HN6GWiJg2CYwMApgYMDAYACirKxwrEA
+
+---
+# Object Types
+
+#### Sealed objects
+
+- property値と一緒に生成するobjectのこと
+- 定義されたpropertyとその値の型をすべて知っているobject
+- 新しいpropertyへの値セットはできない
+
+```js
+const obj1 = {
+  foo: 1,
+  bar: true,
+  baz: 'three'
+};
+
+const foo: number = obj1.foo;
+const baz: null = obj1.baz;  // Error
+const bar: number = obj1.bar;  // Error
+
+// set a new property is error
+obj1.add = false;  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzDgCMArARjAF4wBvVMMKOOALjHIBoGxiBDAE7t8AgK4BTbo34AvdgHJ8ACwHjx81AF8A3Oix5CzNmGyiAtsXEDqRMuQB0R3foK8+ck6JgwbJCvdltRmBgMABRAQE4AUwcV34hTwsrXzsAwSCwEPDI6PRs1T5cXABLAHNsVD8HPgATWpsoPhhccW0gA
+
+---
+# Object Types
+
+#### Unsealed objects
+
+- flowではpropertyが何もないobjectを生成すると、そのobjectはUnsealed objectsと呼ばれる
+- Sealed objectと異なり、property追加を許容する
+- 未定義のpropertyへのアクセスはv0.42.0の段階ではerrorにならないが将来改善されるかも
+
+```Js
+const obj1 = {};
+
+obj1.foo = 1;
+obj1.bar = true;
+
+// reassign
+obj1.foo = 'reassign';
+const foo: string = obj1.foo;
+const bar: number = obj1.bar;  // Error
+
+// unsafe behavior
+const blah: string = obj1.blah;
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzDgCMArARjAF4wBvAXwG50SKA6KOOasc518m2IBDAE498ogK4BTZqmDAwomcNy4AlgHNsqARy48A5CrWadR5ljyFOcAFxgCojdi099dqzgJgRox2wpAFtiGXEafX9GMDBFMABRUVE4UXR4qTxhKBkAGj8pQnwACw1cPxli4QA3DVSwYOEATwqwDWCABxTqmQATNuwwEpkwKEKpFUwfQmIYYWLHZ1d3DzJBWfnGIA
+
+---
+# Object Types
+
+#### Exact object typess
+
+- 指定されたpropertyの集合で構成されるobjectのみを強要したい場合に使う
+- [Width Subtyping](https://flow.org/en/docs/lang/width-subtyping/)という仕組み
+
+```js
+function exact(obj1: {|foo: string, bar: number|}): void {
+  obj1.bar++;
+  console.log(obj1.foo);
+}
+
+function normal(obj1: {foo: string, bar: number}): void {
+  obj1.bar++;
+  console.log(obj1.foo);
+}
+
+exact({foo: 'text', bar: 256});
+exact({foo: 'text'});  // Error
+exact({foo: 'text', bar: 256, blah: true});  // Error
+normal({foo: 'text', bar: 256});
+normal({foo: 'text'});  // Error
+normal({foo: 'text', bar: 256, blah: true});
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVUCuA7AxgFwEs5swBTADwEMCAKOAIwCsBGALjAG8AfKOODgGd8AJ0LYA5gBowDKiI7ZMAWwZkR3AL4BKDgDc4hACZdUYMI1YA6OSIDUdgNxmwuEoLgwyV+BPrMWKz44bWdNdCw8IhIwbDgRZSoYf1YOTmChUXFpWXlFFTURHX1DE04XS0DbB2dzN2wPLx84P0qg-lDUcNRKGnxadP4OAHJ8SnxhmVsOACYAVgA2HWdeukGBMFHx4eXzYGAwAFEREXie6jWMzbGKCam8sHmFqZgqAAsOUUwyXbB9o5OZziCSSAyuW1uk1yCkei2WqGBiWS6xGNwmv3+x1OIgR8SRYKG1229xhTxe70+Im+yyAA
+
+---
+# Object Types
+
+#### Objects as maps
+
+- objectをMapとして使うのはそもそも良くない
+  - ES2015 [Map](http://www.ecma-international.org/ecma-262/6.0/#sec-map-constructor)
+- とはいってもlibraryの規約等で使わざるを得ないケースもある
+- Indexer propertiesとnamed propertiesはmixすることもできる
+
+```js
+const obj: {[someKey: number]: string} = {};
+obj[1] = 'Red';
+obj[2] = 'Blue';
+obj[true] = 'Green';  // Error
+
+// mix indexer properties and named properties
+const forms: {
+  quantity: number,
+  [name: string]: string
+} = {
+  quantity: 5
+};
+forms['itemId'] = 'some-id';
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzDgCMArALjAG8BtXOAWwFMBpJgT0uwFcHimATgF1KBAQEtsAcwC+YALzUZAblQlSNAIxCFYAOQAlJgBM9q9TQBMOxXoBCMbkzNqyNfAKc39AcQFMmbDMwMGBgMABRAQE4AXQwsAZxAA8wSWMmZMEwAAcYnMF8cSZcMABDbGMwbDLmKry4AoEikswcAjAoWIZcSipUEIBHbgqi-E5q3n4BABoBsBoa5lEPSSkRMDE11DlFfqGR7DGJgFYd1S6BHpo9cXwmBgBJU289emYAWnFTZSA
+
+---
+# Array Types
+
+- JavaScriptではArrayはTupleとしても使用される
+- flowでは明確に区別される
+- indexアクセスは安全ではない
+
+```js
+const arr1: Array<number> = [1, 2, 3];
+const arr2: ?Array<number> = [1, 2];
+const arr3: ?Array<number> = null;
+const arr4: ?Array<number> = [null];  // Error
+
+arr1[4];  // Works
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzAEMAnEgRgC4wBBMogTwB5sBXAWwCMBTEgPjABeMAG1yAGjAAmSQGYAugG5MOAsTJTqAfjolGLDj35DRE6UpV5CpErO279bLrwHC2MGMqxX1JACz29MxORq6i7jBKYGDAwGAAomRwJOg25CJ+UTFxAOrJANa4QA
+
+---
+# Tuple Types
+
+- JavaScriptでは配列を用いて表現される
+- flowではtuple同士は同じ長さもののみ一致する
+- flowではtupleはArrayと一致しない
+- tupleではtuple自身をmutateするArray.protptype methodsは使えない
+
+```js
+const tuple: [string, number, boolean] = ['text', 256, true];
+let text: string = tuple[0];
+let str: string = tuple[2];  // Error
+// destructuring
+const [blah: string, , bool: boolean] = tuple;
+// Works same length tuples
+const tuple1: [number, boolean] = [256, true];
+const tuple2: [number] = tuple1;  // Error
+// Array.prototype
+tuple1.join(',');  // Works
+tuple1.push('text');  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzHwFcAHGAUwC4wBtAgJwEtsBzAGjG2IFsAjCg0584cSgENsAXTABeOgHJ8FAB74FnAEwBWAGyd8DYhSkBuVJULK1NRi1ZyiZSrQAMZixUKNbh+45JyClpNMzAwYGAwAFEGBjgGVEiwABMKRmIMEmY2TBwCOj4YcQALXxyOMGFRGBoRMQpJGXlAynNkgHUEgGtcMFxxHgowSjZ8Eqcg3Dy8K2cKAEYaWm5+QWqGpscQvQMjE3MsWcnKTWXVgQZmk8XTcOTY+MTkgEE48QBPADpSePw4fAfUgUVCtRZfABWcBYAAoNAoAJR3CJRLoMXqg+YLH7EXAlOHWdRI+5RR4JIA
+
+---
+# Class Types
+
+```js
+class Person {
+  age: number;
+  constructor(age: number) {
+    this.age = age;
+  }
+  sing(): void {
+    console.log('blahblah');
+  }
+}
+
+const p1: Person = new Person(30);
+const arr: Array<Person> = [p1];
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjGBDAzrsABQFMAnXOAOzAG9UwxsBzYgLjEoFcBbAIzIDc9MBiq4ALqU4ZxcUgApmbDj36kAlLWENxACwCWuAHRKwAXkYshDAL7Dc+yk3nr2ANzj6AJloYNRlBQwxEbwzgDkvDi6Udi64erWYHZ2mGLiYAAOAIzsJORU5hzESPkUlPIAzAAMiWmBGdikpOwAgs3YAJ4APGVUAHxFANo5ALoCQA
+
+---
+# Class Types
+
+#### Class Generics
+
+```js
+class Port<Input, Output> {
+  constructor(input: Input, output: Output) { 
+  }
+}
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjGBDAzrsABTgCcAXAHgEkA7ABwFcyAaMAeScbID4wBvVGDAY4NXGRIMMZUgAoAlvSYAuMLS6s4nFe21kAlPzCCwAX1SmgA
+
+---
+# Type Aliases
+
+- 複雑な型を複数箇所で使いまわしたいときなど
+
+```js
+type Contact = {
+  state: string,
+  city: string,
+  tel: string,
+  email: string,
+};
+  
+const contact: Contact = {
+  state: 'New York',
+  city: 'blahblah',
+  tel: '090-1234-xxxx',
+  email: 'rkaneko@example.com'
+};
+```
+
+---
+# Interface Types
+
+```js
+interface Serializable {
+  serialize(): string;
+}
+
+class Animal {
+  serialize(): string {
+    return 'Animal';
+  }
+}
+class Food {
+  serialize(): string {
+    return 'Food';
+  }
+}
+
+const animal: Serializable = new Animal();
+const food: Serializable = new Food();
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBLAdgFwKYBOUAhgMZ5gDKhGxMGAXsQEYwUDeqYYAzjXYzwAKAJQAuXjgLYA5gG5UAX3SkYxHjzABBLBgC2dMJ259pAhsPGTpWGUa7cwBPDgCuBLGADkO-XS8K3MrKquqaAGJwcAAm9ib89BaiEjxSsnGOzm4e3pExAQ7BKnBYqWDEugYwEtRmiSxsYAC8YFh4SL5VogqkJWVQUdE1CYwNFC1tSHnR3UA
+
+---
+# Interface Types
+
+- Interfaceのpropertyはdefaultで[invariant](https://flow.org/en/docs/lang/variance/#toc-invariance)
+- modifierをつけることでcovariant (read-only)やcontravariant (write-only)に変更できる
+
+```js
+interface Invariant {property: string}
+interface Covariant {+readOnly: string}
+interface Contravariant {-writeOnly: string}
+
+function blah1(v: Invariant) {
+  v.property;
+  v.property = 'foo';
+}
+
+function blah2(v: Covariant) {
+  v.readOnly;
+  v.readOnly = 'bar';  // Error
+}
+
+function blah3(v: Contravariant) {
+  v.writeOnly;  // Error
+  v.writeOnly = 'foo';
+}
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBLAdgFwKYBOUAhgMZ5gCSWAbsQRsbmAN4AOBcbhOAngFxgAzjgZYA5gF9MuQiXJgAwnDoMmOVgGoCeYgBMA8lhgDho7FJn4iZCstwFiqxsxYBaBA3xGTgkWMtUKABXLFIcDDgsMAAjGGIACwBGAAoaQWpndQBKVlQwMBoAOg4uHl4AbnzCks5uAj4wAF4wAHIoODhWqukg0PDI6LjEgCY0wWUs3FyWauKdfR9KuaKFw2NeZraY+m6C4GAwAFECTgJUXpCwiKjY+ISAZnGlKNEnehccGZXPDG8Nir7Q4nM4-Lx4JZbdqdboXIA
+
+---
+# Generic Types
+
+---
 # Unsupported
 
 - [Symbols](https://flow.org/en/docs/types/primitives/#toc-symbols)
