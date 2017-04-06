@@ -47,9 +47,7 @@ class: title-page
 
 0. Basics
 
-0. In practice
-
-0. Conclusion
+0. ~~In practice~~ (WIP)
 ---
 class: paragraph-page
 
@@ -110,7 +108,7 @@ class: paragraph-page
 
 #### Try Flow
 
-- https://flowtype.org/try/
+- https://flow.org/try/
 
 .center[<img src="./img/try-flow-src.png" alt="rkaneko" width="280px"/>]
 .center[<img src="./img/try-flow-result.png" alt="rkaneko" width="540px"/>]
@@ -133,6 +131,8 @@ class: paragraph-page
 ```bash
 # In some project directory
 $ npm init -f
+
+$ npm i -D flow-bin flow-remove-types
 ```
 
 ---
@@ -799,6 +799,215 @@ function blah3(v: Contravariant) {
 
 ---
 # Generic Types
+
+- see: https://flow.org/en/docs/types/generics/
+
+---
+# Union Types
+
+- 集合における一つの型を表す
+  - enumのようにも使える
+
+```js
+type Action1 = {|
+  type: 'ACTION1',
+  payload: {|id: string|}
+|};
+
+type Action2 = {|
+  type: 'ACTION2',
+  payload: {|quantity: number|}
+|};
+
+type Action = Action1 | Action2;
+```
+---
+# Unions Types
+
+- disjoint unionsはある一つのpropertyを見てそれぞれのobjectの型を識別できる
+  - Fluxだとreducerにおけるaction typeの識別するといったユースケースがある
+
+```js
+type State = {
+  id: string,
+  quantity: number
+};
+
+function reducer(state: State, action: Action): State {
+  if (action.type === 'ACTION1') {
+    const {id} = action.payload;
+    return Object.assign({}, state, {id});
+  } else if (action.type === 'ACTION2') {
+    const {quantity} = action.payload;
+    return Object.assign({}, state, {quantity}); 
+  }
+  return state;
+}
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVAXAngBwKZgCCAxhgJZwB2AjGALxgDeAPqmGNvgFxgDkhAYQAqASQDyAOWq8ANGzA4AhlniKAJjxZkNYAM4YATmUoBzZgF9UFgNyZcBEuSoAmek1btOeHv2HiJzrLySipw6prMAI4AroqU5Ng8lNEAtgBGeAYWVua2XkSkFJRujkW0zAVOlM559mAAyhiKGAQMjPLaPPpGpnLsMXEJWEmpGQaouahQ0ZSFVGAGeGrRxJkAFPrN3g1NLTJginOUPKVUAJQ8jVtMHVBga4dVAHT5dG98gqKS0mc37OzEKj6JjacxuR5FJ4hVRqWz-BZ4DDRAzFMRpABWeFIT0Uul0ZBMlDWjHM+02exBanMZzhYDBeBgugIZDuDyOLzqbwYvi+AV4v3a8MBlGBjAG8TI2DBDAhVChyhhtLAAEhFkiUWA0Zjsbj8YTiaS9Ls8PsxbEJVKaWB5JZ2GrkcVyXhbOYgA
+
+---
+# Intersection Types
+
+- 集合におけるすべて型の積集合を表す型
+  - 列挙したobject型を全て組み合わせたobject型を表現したいといったユースケース
+- 実行時に生成不可能なIntersection型は作れない
+  - e.g. `number & string`
+
+```js
+type A = {a: string};
+type B = {b: number};
+type C = {c: boolean};
+
+function acceptIntersection(obj: A & B & C): void {
+  console.dir(obj);
+}
+
+acceptIntersection({a: 'text'});  // Error
+acceptIntersection({a: 'text', b: 256});  // Error
+acceptIntersection({a: 'text', b: 256, c: true});
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVAXAngBwKZgCCYAvGAN4CGAXGAM4YBOAlgHYDmAvgNya4EAhUhQBGtVgFcAtiLyMeffGADCw8gGNaIuHBh5KrBaigTW6jMziswlderw4MASVYY5dPOcusAFHBEAVrTEAGRgQmHKAJS0AG5wzAAmFKhgYOpWdLp4AHSJzIx+gVG8nOi29o4uboweXlY+VLQA5G4AHhjNnCVpwMBgAKKMjHCMqBUOzq7unhYNTWCteB3NADRgYmAATACsAGzd3L39QyNjE1XTtbPejTSL7Z3rm7t765pgTBJ4h0A
+
+---
+# Typeof Types
+
+- JavaScriptのtypeofより強力なもの
+
+```js
+let num1 = 256;
+let num2: typeof num1 = 128;
+let num3: typeof num1 = 'text';  // Error
+
+let obj1 = {foo: 1, bar: 'text'};
+let obj2: typeof obj1 = {foo: 1, bar: 'text'};
+let obj3: typeof obj1 = {foo: 2, bar: 'text'};
+let obj4: typeof obj1 = {foofoo: 1, barbar: 'text'};  // Error
+
+let arr1 = [1, 2, 3];
+let arr2: typeof arr1 = [3, 2, 1];
+let arr3: typeof arr1 = [4, 5];
+let arr4: typeof arr1 = [true, false];  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVMCmAXMA7AVwFsBGMAXjACYBWANgG4Md9iqAuMbATwAdM4UVqQpgSVABxMsuQkQDMnHv0HCylAOTZMAD2waGYMMGBgAogCcLcC+hlg4AIwBW6sAG8ocOJxIAaMEcAQwtOLV19AF9pFidnDi4+ASE4t09vXwDg0LBwvQ1o5lw4xUSVFJc0rx9qLJCw7XzC+ziAFiUk1VTRdMEMsTqLbIaIgsNjU0trWyKwEIs3AG1-WrB5AF0Y3HmE5WS5qyX5AKoAkk3Z+dK91Xml1oCaC-t59rL9u9FF7AsCTACoEEYABnTCbIwmcxWGxAA
+
+---
+# Type Casting Expressions
+
+- キャストするとき
+- 型のassertionをするとき
+
+```js
+const num1 = 1;
+const num2 = 3.14;
+
+// cast
+const obj = {prop: (num1: number)};
+const arr = [(num1: number), (num2: number)];
+
+// assert
+(num1: number);
+(num1: boolean);  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzGwFcBbARjAF4xyBuTHAosgJmrAGYA6cgFgaM8hOACMAVhwDeABwBOcGQC4wAChIUVG0QFM5ASgC+DLMLABDOXI4BtdWXJayugwBo1G1k9Iv9AXUF7TRYfPX0GIMcwUTg4GB1zbHCwMGBgMABRKzg5IA
+
+---
+# Utility Types
+
+#### `$Keys<T>`
+
+- objectのkey値の列挙
+  - Javaの`Map#keys()`に近い
+
+```js
+const countries = {
+  US: 'United States',
+  JP: 'Japan'
+};
+
+type Country = $Keys<typeof countries>;
+const jp: Country = 'JP';
+const nope: Country = 'nope';  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjOA7AzgFzCwFdt8AnASwFNcwBeMAb1TDAFUBlALjAHJ22SvmoATMJ3wBDEbj4AaVmABSABV59lUgA5TsfVAF8A3OnwBPbdTABhOKQrmGYACQBpaudwAeC1bhQRPZkVLQAfKZYeIQAVtq8dg7kToyaqnyROARg2HBWCcGOzny5VhlswMBgAKLk5HDkQA
+
+---
+# `$Diff<A, B>`
+
+- AとBの差分
+  - 個人的に理解できていない...
+
+```js
+type Props = {name: string, age: number};
+type DefaultProps = {age: number};
+type RequiredProps = $Diff<Props, DefaultProps>;
+
+const blah = (props: RequiredProps): void => {
+  console.log(props.name);  // Error
+  console.log(props.age);  // Error
+};
+
+blah({name: 'foo'});
+blah({name: 'foo', baz: false});
+blah({age: 20});  // Error
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVAXAngBwKZgAKATnDgM5gC8YA3gHYCGAtngFxjkbECW9A5gBowjfuzD0ArswBGeYgF8A3JlwEAIniiNJMDCTKUatUeKmz5y1fjAAlPAEdJPYngAmBitTAASdTygoAB5PcmFNbV19UgoAPhVUAGM4ei4wGRhGAAtvAAocGPIOeycXd1CASg4ANzgeN2pYulQwMGTUuBg8ADp4fnzC7qZWCqVW4GAwAFFiUmIWtpTyTp6+gcNu01HxyZm51CtUDOzchhZxAHIoODgLhVGjzKzT4cvr2+EZRgAvDm0Ych4e4qY7PExiDgAJgADMCdtNZnBiEA
+
+---
+# `Class<T>`
+
+- リフレクションでインスタンス生成したり
+
+```js
+class Store {}
+
+function makeStore(storeClass: Class<Store>): Store {
+  return new storeClass();
+}
+
+(makeStore(Store): Store);
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVBjGBDAzrsAZQBc4AnAUzAG8BfdKAVwDsNiBLOZsAW2wGsKJchQAUuUpQDCOfAC4wMvLgA8wygD4AlAvVVqqMGErFGZbswpIJIpflFaA3KnqpRfQXtF6dRSRScgA
+
+---
+# `$Subtype<T>`
+
+```js
+type Errors = {
+  [key: $Subtype<string>]: string
+};
+```
+
+- https://flow.org/try/#0PQKgBAAgZgNg9gdzCYAoVAXAngBwKZgCiATsXMQM5gC8YA3qmGANoDWeWAXGACQDKAVwBG2fAB4KGYgEsAdgHMAfAF1ukmQtQBfANxA
+
+---
+# etc
+
+#### `$PropertyType<T. x>`
+
+---
+# Module Types
+
+- ES modules の拡張形式でのexport/import
+
+```js
+export default type Foo = {
+  name: string
+};
+exportt type Bar = {
+  age: number
+};
+
+import type Blah from './blah';
+import type {BlahBlah} from './blahblah';
+```
 
 ---
 # Unsupported
