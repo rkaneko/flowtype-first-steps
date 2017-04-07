@@ -55,7 +55,7 @@ class: paragraph-page
 ---
 # What's Flowtype?
 
-#### https://github.com/facebook/flow
+https://github.com/facebook/flow
 
 #### Opt-in static type checker for JavaScript
 
@@ -962,7 +962,7 @@ blah({age: 20});  // Error
 ---
 # `Class<T>`
 
-- リフレクションでインスタンス生成したり
+- constructor関数を持つobjectからインスタンス生成
 
 ```js
 class Store {}
@@ -1001,7 +1001,7 @@ type Errors = {
 export default type Foo = {
   name: string
 };
-exportt type Bar = {
+export type Bar = {
   age: number
 };
 
@@ -1013,6 +1013,121 @@ import type {BlahBlah} from './blahblah';
 # Unsupported
 
 - [Symbols](https://flow.org/en/docs/types/primitives/#toc-symbols)
+
+---
+class: paragraph-page
+
+# In practice
+
+---
+# Library Definitions
+
+- JavaScriptの世界では3rd party libraryを使って開発することが多い
+- Flowを使うprojectではprojectの外界の型情報を必要になることもある
+  - library definition (AKA libdef)
+- libdef filesの拡張子は`.js`
+- projectで利用するlibdef filesは`flow-typed`ディレクトリで管理される(Flowの規約)
+  - `.flowconfig`で変えることもできる
+- libdefはflow-typedで管理する
+
+---
+# Library Definitions
+
+- libdef filesでは`declare xxx`というsyntaxを使ってfunction, class, variableの型定義を記述する
+
+```js
+declare function blah(a: string): string;
+
+declare class Wizard {
+  constructor(): Wizard;
+  flame(): Fire;
+}
+
+declare var GITHUB_URL: string;
+
+declare type ContactID: string;
+```
+
+---
+# Library Definitions
+
+- moduleを宣言してスコープ内で型定義を記述することでmoduleの型情報を定義する
+
+```js
+declare module 'react-router-dom' {
+  declare export type RouterHistory = {
+    length: number;
+    // blahblah
+  }
+}
+```
+
+.center[.reference[https://github.com/flowtype/flow-typed/blob/master/definitions/npm/react-router-dom_v4.x.x/flow_v0.38.x-/react-router-dom_v4.x.x.js]]
+
+---
+# Library Definitions
+
+- 3rd party libdefを利用する
+
+```bash
+# in your project directory
+$ npm i -D flow-typed
+
+# 3rd party libdefを github.com/flowtype/flow-typed からinstall
+$ $(npm bin)/flow-typed install
+```
+
+- package.jsonをみてrepositoryにlibdefがあればinstall
+- libdefがない場合はFlowは3rd party libraryのexportされている対象の型定義を`any`として扱う
+  - https://flow.org/en/docs/libdefs/#toc-general-best-practices
+
+---
+# Library Definitions
+
+- e.g. react-router-dom moduleのlibdefの利用
+
+```js
+/* @flow */
+
+import type {RouterHistory} from 'react-router-dom';
+
+type SomeComponentProps {
+  history: RouterHistory
+};
+```
+
+---
+class: paragraph-page
+
+# Confirm the major points
+
+---
+# Confirm the major points
+
+- Flowはnominal typingとstructual typingのmix
+  - https://flow.org/en/docs/lang/nominal-structural/
+- literalを型として利用できる
+- `null`と`undefined`を型で扱う場合は区別する
+  - Maybe types, Optional types
+- Objects typesにはSealed/Unsealedという考え方がある
+- Objects typesにexact object typesがある
+- ObjectsをMapとして利用せざるを得ない場合にはas Mapsがある
+- Flowのdocumentにunsafeと書いてあるものはなるべく使わないようにする
+  - anyは最終手段
+  - unsealed objectsにおける未定義propertyへのアクセス
+- Union TypesはReactにおけるActionの型付けに使える
+- 型情報を詳細化していくさいには[Type Refinements](https://flow.org/en/docs/lang/refinements/)を参考に
+  - flowtype使いたてのころは良く怒られる
+
+---
+# References
+
+- flow Documentation
+  - https://flow.org/en/docs/
+- GitHub
+  - https://github.com/facebook/flow
+  - https://github.com/flowtype
+
 ---
 class: paragraph-picture-page
 
